@@ -52,10 +52,10 @@ const RootMutation = new GraphQLObjectType({
         name: { type: GraphQLString },
         email: { type: GraphQLString }
       },
-      resolve: async (_, { name, email }) => {
-        const [result] = await pool.query('INSERT INTO users (name, email) VALUES (?, ?)', [name, email]);
+      resolve: async (_, { name, email, address, status, religion, phone }) => {
+        const [result] = await pool.query('INSERT INTO users (name, email) VALUES (?, ?)', [name, email, address, status, religion, phone]);
         const id = result.insertId;
-        return { id, name, email };
+        return { id, name, email, address, status, religion, phone };
       }
     }
   }

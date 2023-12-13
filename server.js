@@ -8,13 +8,11 @@ const app = express();
 
 app.use(cors());
 
+
 app.use('/graphql', graphqlHTTP({
   schema: schema,
   graphiql: true // enabled UI
 }));
-
-
-require('dotenv').config();
 
 
 const PORT = 3000;
