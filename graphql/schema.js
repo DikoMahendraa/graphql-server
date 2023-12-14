@@ -1,6 +1,6 @@
 const {pool} = require('../services/configs');
 
-const { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLList, GraphQLInt } = require('graphql');
+const { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLList, GraphQLInt, GraphQLID } = require('graphql');
 
 
 const UserType = new GraphQLObjectType({
@@ -50,12 +50,35 @@ const RootMutation = new GraphQLObjectType({
       type: UserType,
       args: {
         name: { type: GraphQLString },
-        email: { type: GraphQLString }
+        email: { type: GraphQLString },
+        address: { type: GraphQLString },
+        gender: { type: GraphQLString },
+        religion: { type: GraphQLString },
+        phone: { type: GraphQLString },
       },
       resolve: async (_, { name, email, address, gender, religion, phone }) => {
-        const [result] = await pool.query('INSERT INTO users (name, email) VALUES (?, ?)', [name, email, address, gender, religion, phone]);
+        const [result] = await pool.query('INSERT INTO users (name, email, address, gender, religion, phone) VALUES (?, ?)', [name, email, address, gender, religion, phone]);
         const id = result.insertId;
         return { id, name, email, address, gender, religion, phone };
+      }
+    },
+    deleteUser: {
+      type: GraphQLString,
+      args:{
+        userId: { type: GraphQLID }
+      },
+      resolve: async (_, { userId }) => {
+        try {
+          const {ResultSetHeader} = await pool.query("DELETE FROM users WHERE id = ?", [userId])
+
+          if(ResultSetHeader.affectedRows > 0) {
+            return "User deleted successfully"
+          } else {
+            throw new Error("user not found")
+          }
+        } catch (error) {
+          throw new Error(`failed to delete user: ${error.message}`)
+        }
       }
     }
   }
