@@ -10,7 +10,6 @@ const UserType = new GraphQLObjectType({
     name: { type: GraphQLString },
     email: { type: GraphQLString },
     address: { type: GraphQLString },
-    gender: { type: GraphQLString },
     religion: { type: GraphQLString },
     phone: { type: GraphQLString },
   })
@@ -43,6 +42,7 @@ const RootQuery = new GraphQLObjectType({
   }
 });
 
+
 const RootMutation = new GraphQLObjectType({
   name: 'RootMutation',
   fields: {
@@ -52,14 +52,22 @@ const RootMutation = new GraphQLObjectType({
         name: { type: GraphQLString },
         email: { type: GraphQLString },
         address: { type: GraphQLString },
-        gender: { type: GraphQLString },
         religion: { type: GraphQLString },
         phone: { type: GraphQLString },
       },
-      resolve: async (_, { name, email, address, gender, religion, phone }) => {
-        const [result] = await pool.query('INSERT INTO users (name, email, address, gender, religion, phone) VALUES (?, ?)', [name, email, address, gender, religion, phone]);
+      resolve: async (_, { name, email, address, religion, phone }) => {
+        const [result] = await pool.query(
+          'INSERT INTO users (name, email, address, religion, phone) VALUES (?, ?)',
+          [
+            name,
+            email,
+            address,
+            religion,
+            phone
+          ]);
         const id = result.insertId;
-        return { id, name, email, address, gender, religion, phone };
+        
+        return { id, name, email, address, religion, phone };
       }
     },
     deleteUser: {
