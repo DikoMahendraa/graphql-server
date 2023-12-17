@@ -70,6 +70,33 @@ const RootMutation = new GraphQLObjectType({
         return { id: ID, name, email, address, religion, phone };
       }
     },
+    updateUser: {
+      type: UserType,
+      args: {
+        userId: { type: GraphQLID },
+        name: { type: GraphQLString },
+        email: { type: GraphQLString },
+        address: { type: GraphQLString },
+        religion: { type: GraphQLString },
+        phone: { type: GraphQLString },
+      },
+      resolve: async (_, { userId, name, email, address, religion, phone }) => {
+        try {
+          const [result] = await pool.query(
+            'UPDATE users SET name = ?, email = ?, address = ?, religion = ?, phone = ? WHERE id = ?',
+            [name, email, address, religion, phone, userId]
+          );
+
+          if (result.affectedRows > 0) {
+            return { id: userId, name, email, address, religion, phone };
+          } else {
+            throw new Error('User not found');
+          }
+        } catch (error) {
+          throw new Error(`Failed to update user: ${error.message}`);
+        }
+      },
+    },
     deleteUser: {
       type: GraphQLString,
       args:{
