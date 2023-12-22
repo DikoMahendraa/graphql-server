@@ -104,15 +104,15 @@ const RootMutation = new GraphQLObjectType({
       },
       resolve: async (_, { userId }) => {
         try {
-          const {ResultSetHeader} = await pool.query("DELETE FROM users WHERE id = ?", [userId])
-
-          if(ResultSetHeader.affectedRows > 0) {
-            return "User deleted successfully"
+          const result = await pool.query("DELETE FROM users WHERE id = ?", [userId]);
+    
+          if (result[0].affectedRows > 0) {
+            return "User deleted successfully";
           } else {
-            throw new Error("user not found")
+            throw new Error("User not found");
           }
         } catch (error) {
-          throw new Error(`failed to delete user: ${error.message}`)
+          throw new Error(`Failed to delete user: ${error.message}`);
         }
       }
     }
